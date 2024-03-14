@@ -30,7 +30,7 @@
         {:else if currentVisible === 1}
         <span class="color-block" style="background-color: {images[currentIndex].color};"></span>
         {:else if currentVisible === 2}
-        <h2>{images[currentIndex].name} est la couleur du ciel au coin de {images[currentIndex].location}</h2>
+        <h2>{images[currentIndex].name} était la couleur du ciel au coin de {images[currentIndex].location}</h2>
 
       {:else if currentVisible === 3}
         <img src={'archive/' + images[currentIndex].fileName} alt={images[currentIndex].name}>
@@ -55,8 +55,8 @@
     }
   
     .color-block {
-      width: 16vw;
-      height: 9vw;
+      width: 44vw;
+      height: 33vw;
       margin: 20px;
       transition: background-color 0.5s ease-in-out;
     }
