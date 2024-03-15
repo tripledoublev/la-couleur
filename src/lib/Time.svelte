@@ -8,7 +8,9 @@
     let now;
     let currentIndex = writable(0);
     let messages = writable([]);
-    
+    let messageCount = 0;
+
+
     function updateMessages() {
     let newMessages = [];
     
@@ -35,7 +37,10 @@
         newMessages.push(`Cette expérience s'est terminée il y a ${timeSinceClosing} secondes.`);
       }
     messages.set(newMessages);
-    $currentIndex = Math.floor(Math.random() * newMessages.length);
+    messageCount > 3 ? messageCount = 0 : messageCount += 1;
+    if (messageCount === 3) {
+      $currentIndex = Math.floor(Math.random() * newMessages.length);
+    }
   }
 
   onMount(() => {
