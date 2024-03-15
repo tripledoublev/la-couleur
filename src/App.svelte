@@ -8,13 +8,14 @@
   import LiveCameras from './lib/LiveCameras.svelte';
   import FetchArchive from './lib/Couleur/FetchArchive.svelte';
   import FetchData from './lib/Climat/FetchData.svelte';
+  import FetchMaison from './lib/Maison/FetchMaison.svelte';
 
   const openingTime = 1710606462; 
   const closingTime = 1712507262; 
 
   let isInterval = true;
 
-  let intervalTime = 5000; 
+  let intervalTime = 6000; 
   let lastComponentIndex = -1; 
   let newIndex;
   let whichInterval;
@@ -31,9 +32,10 @@
 
   // Function to generate a new interval within a specified range
   function getNewInterval() {
-    const minMultiplier = 2; // Defines minimum multiplier (e.g., 2 for double the base interval)
+    const minMultiplier = 4; // Defines minimum multiplier (e.g., 2 for double the base interval)
     const maxMultiplier = 12; // Defines maximum multiplier (e.g., 5 for five times the base interval)
     const multiplier = minMultiplier + Math.random() * (maxMultiplier - minMultiplier);
+    console.log('new interval', intervalTime * multiplier);
     return intervalTime * multiplier;
   }
 
@@ -45,16 +47,16 @@
       if (isInterval) {
         newIndex = getNewComponentIndex();
         if (newIndex === 0) {
-          whichInterval = 5000;
+          whichInterval = 6000;
         } else if (newIndex === 4) {
-          whichInterval = 9000;
-        } else if (newIndex === 5) {
+          whichInterval = 12000;
+        } else if (newIndex >= 5 && newIndex <= 9) {
           whichInterval = getNewInterval() * 3;
         } else {
           whichInterval = getNewInterval();
         }
       } else {
-        whichInterval = 2345;
+        whichInterval = 3000;
         newIndex = 100;
       }
       lastComponentIndex = newIndex; 
@@ -94,9 +96,14 @@
   >
     <FetchData />
   </div>
-  {:else if newIndex >= 5 && newIndex <= 11}
+  {:else if newIndex >= 5 && newIndex <= 9}
     <div in:fade={{duration: 500}}>
-    <FetchArchive />
+      <FetchMaison />
+  </div>
+  {:else if newIndex >= 10 && newIndex <= 11}
+    <div in:fade={{duration: 500}}>
+      <FetchArchive />
+
   </div>
   {:else if newIndex === 100}
   <div in:fade={{duration: 500}}
