@@ -1,39 +1,54 @@
 <script>
     import { onMount } from 'svelte';
   
-    export let data; // The array of objects is now passed as 'images'
+    export let data; 
+    export let intervalTime = 6000;
     let images = data.images;
-    let currentIndex = images.length - 1; // Start with the last item
-    let currentVisible = 3; // 0 for the color description, 1 for color block, 2 for image
+    let currentIndex = Math.floor(Math.random() * images.length - 1);
+    let currentVisible = 0; 
+    let pauseState = false;
   
     onMount(() => {
-      const interval = setInterval(() => {
-        console.log('images', images);
+      const intervals = [];
+      intervals.push(setInterval(() => {
+        pauseState = false;
         // Change the view (color description, color block, image) every 3 seconds
         if (currentVisible < 3) {
           currentVisible += 1;
+          console.log(currentVisible);
         } else {
           // Once all views have been shown for the current item, move to the previous item
           currentVisible = 0;
-          currentIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+          currentIndex = currentIndex > 0 ? currentIndex - 1 : Math.floor(Math.random() * images.length - 1);
         }
-      }, 5000);
+      }, intervalTime));
+
+      intervals.push(setInterval(() => { 
+            pauseState = true;
+        }, 5000));
   
-      return () => clearInterval(interval); // Cleanup on component destruction
+      return () => intervals.map((a) => {
+        clearInterval(a);
+      }); // Cleanup on component destruction
     });
   </script>
   
   <div class="content">
     {#if images.length > 0} <!-- Ensure there are items to display -->
+     {#if !pauseState}
       {#if currentVisible === 0}
-        <h2>{images[currentIndex].name}</h2>
-        {:else if currentVisible === 1}
-        <span class="color-block" style="background-color: {images[currentIndex].color};"></span>
-        {:else if currentVisible === 2}
+      <img src={'archive/' + images[currentIndex].fileName} alt={images[currentIndex].name}>
+
+        {:else if currentVisible === 1}        
         <h2>{images[currentIndex].name} était la couleur du ciel au coin de {images[currentIndex].location}</h2>
 
-      {:else if currentVisible === 3}
-        <img src={'archive/' + images[currentIndex].fileName} alt={images[currentIndex].name}>
+        {:else if currentVisible === 2}
+        <span class="color-block" style="background-color: {images[currentIndex].color};"></span>
+        {:else if currentVisible === 3}
+
+        <h2>{images[currentIndex].name}</h2>
+      
+      {/if}
       {/if}
     {/if}
   </div>
@@ -55,9 +70,9 @@
     }
   
     .color-block {
-      width: 44vw;
-      height: 33vw;
-      margin: 20px;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
       transition: background-color 0.5s ease-in-out;
     }
   </style>
