@@ -1,6 +1,8 @@
 <script>
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import axios from 'axios';
+  import { homeCount } from './stores.js';
 
   import Time from './lib/Time.svelte';
   import Text from './lib/Text.svelte';
@@ -10,7 +12,7 @@
   import FetchData from './lib/Climat/FetchData.svelte';
   import FetchMaison from './lib/Maison/FetchMaison.svelte';
 
-  const openingTime = 1710606462; 
+  const openingTime = 1710630000; 
   const closingTime = 1712507262; 
 
   let isInterval = true;
@@ -20,7 +22,7 @@
   let newIndex;
   let whichInterval;
   let texts = [];
-
+  let homeImages = [];
   // Function to generate a new, non-repeating componentIndex
   function getNewComponentIndex() {
     let newIndex;
@@ -33,15 +35,29 @@
   // Function to generate a new interval within a specified range
   function getNewInterval() {
     const minMultiplier = 4; // Defines minimum multiplier (e.g., 2 for double the base interval)
-    const maxMultiplier = 12; // Defines maximum multiplier (e.g., 5 for five times the base interval)
+    const maxMultiplier = 8; // Defines maximum multiplier (e.g., 5 for five times the base interval)
     const multiplier = minMultiplier + Math.random() * (maxMultiplier - minMultiplier);
     console.log('new interval', intervalTime * multiplier);
     return intervalTime * multiplier;
   }
 
+  
+  async function fetchHome() {
+      try {
+        const response = await axios.get("at-home/home-metadata.json");
+        homeImages = response.data;
+        console.log(homeImages);
+        homeCount.set(homeImages.images.length - 1);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  
+
   onMount(async () => {
     const response = await fetch('texts.json');
     texts = await response.json();
+    fetchHome();
 
     const updateComponent = () => {
       if (isInterval) {
@@ -51,7 +67,7 @@
         } else if (newIndex === 4) {
           whichInterval = 12000;
         } else if (newIndex >= 5 && newIndex <= 9) {
-          whichInterval = getNewInterval() * 3;
+          whichInterval = getNewInterval() * 2;
         } else {
           whichInterval = getNewInterval();
         }
