@@ -42,12 +42,11 @@ Your browser does not support the video tag.
 <style>
   video {
     position: fixed;
-    top: -2px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: -5px;
+    left: 0%;
     min-width: 100vw;
     min-height: 56.25vw;
-    width: auto;
+    width: 100vw;
     height: auto;
     z-index: -1;
     transition: opacity 1s ease-in-out;
