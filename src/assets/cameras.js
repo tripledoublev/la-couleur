@@ -4,10 +4,6 @@ const videoCameras = [
       "description": "Aut. 13 à la hauteur de l'aut. 20"
     },
     {
-      "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3398&format=mp4",
-      "description": "Aut. 13 au nord de l'aut. 20"
-    },
-    {
       "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3397&format=mp4",
       "description": "Aut. 13 au sud de la rue Hickmore"
     },
@@ -296,10 +292,6 @@ const videoCameras = [
       "description": "Aut. 40 à la hauteur du boul. Poirier"
     },
     {
-      "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3435&format=mp4",
-      "description": "Aut. 40 à la hauteur du boul. de la Côte-Vertu"
-    },
-    {
       "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3434&format=mp4",
       "description": "Aut. 40 à la hauteur du boul. Cavendish (direction sud)"
     },
@@ -346,10 +338,6 @@ const videoCameras = [
     {
       "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3414&format=mp4",
       "description": "Aut. 40 à la hauteur de l'aut. 15"
-    },
-    {
-      "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3729&format=mp4",
-      "description": "Aut. 40 à la hauteur de la rue du Marché-Central"
     },
     {
       "url": "https://www.quebec511.info/Carte/Fenetres/camera.ashx?id=3415&format=mp4",
