@@ -11,32 +11,35 @@
   import FetchArchive from './lib/Couleur/FetchArchive.svelte';
   import FetchData from './lib/Climat/FetchData.svelte';
   import FetchMaison from './lib/Maison/FetchMaison.svelte';
+  import Images from './lib/Maison/Images.svelte';
 
   const openingTime = 1710630000; 
   const closingTime = 1712507262; 
 
-  let isInterval = true;
+  let showComponent = true;
 
   let intervalTime = 6000; 
-  let lastComponentIndex = -1; 
-  let newIndex;
+  let newIndex = 7;
   let whichInterval;
   let texts = [];
   let homeImages = [];
-  // Function to generate a new, non-repeating componentIndex
-  function getNewComponentIndex() {
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * 12); // Here is where you need to adjust for the number of components
-    } while (newIndex === lastComponentIndex); 
-    return newIndex;
+  let componentIndexes = Array.from({ length: 8 }, (_, i) => i);
+  let currentIndex = 0; // Current index in the componentIndexes array
+
+// Function to shuffle the indexes array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
   }
+}
+
 
   // Function to generate a new interval within a specified range
   function getNewInterval() {
-    const minMultiplier = 4; // Defines minimum multiplier (e.g., 2 for double the base interval)
-    const maxMultiplier = 8; // Defines maximum multiplier (e.g., 5 for five times the base interval)
-    const multiplier = minMultiplier + Math.random() * (maxMultiplier - minMultiplier);
+    const minMultiplier = 2; // Defines minimum multiplier (e.g., 2 for double the base interval)
+    const maxMultiplier = 5; // Defines maximum multiplier (e.g., 5 for five times the base interval)
+    const multiplier = Math.floor(minMultiplier + Math.random() * (maxMultiplier - minMultiplier));
     console.log('new interval', intervalTime * multiplier);
     return intervalTime * multiplier;
   }
@@ -52,36 +55,44 @@
         console.error(error);
       }
     }
-  
-
   onMount(async () => {
     const response = await fetch('texts.json');
     texts = await response.json();
     fetchHome();
 
+    shuffleArray(componentIndexes);
+
     const updateComponent = () => {
-      if (isInterval) {
-        newIndex = getNewComponentIndex();
-        if (newIndex === 0) {
+      if (showComponent) {
+        if (currentIndex >= componentIndexes.length) {
+          shuffleArray(componentIndexes); // Re-shuffle after going through all components
+          currentIndex = 0; // Reset index
+        }
+        
+        newIndex = componentIndexes[currentIndex++];
+        
+        if (newIndex >= 0 && newIndex <= 3) {
           whichInterval = 6000;
         } else if (newIndex === 4) {
           whichInterval = 12000;
-        } else if (newIndex >= 5 && newIndex <= 9) {
+        } else if (newIndex === 5) {
           whichInterval = getNewInterval() * 2;
         } else {
           whichInterval = getNewInterval();
         }
-      } else {
-        whichInterval = 3000;
-        newIndex = 100;
-      }
-      lastComponentIndex = newIndex; 
-      isInterval = !isInterval;
+          showComponent = false;
+        } else {
+          whichInterval = 3000;
+          newIndex = 100;
+          showComponent = true;
+        }
       setTimeout(updateComponent, whichInterval);
     };
 
     updateComponent(); // Initialize the first update
-  });
+  }); 
+
+  $: console.log('INDEX!!!!!!!!!!!!!!', newIndex);
 </script>
 
 <main>
@@ -112,14 +123,17 @@
   >
     <FetchData />
   </div>
-  {:else if newIndex >= 5 && newIndex <= 9}
+  {:else if newIndex === 5}
     <div in:fade={{duration: 500}}>
       <FetchMaison />
   </div>
-  {:else if newIndex >= 10 && newIndex <= 11}
+  {:else if newIndex === 6}
     <div in:fade={{duration: 500}}>
       <FetchArchive />
-
+  </div>
+  {:else if newIndex === 7}
+    <div in:fade={{duration: 500}}>
+      <Images />
   </div>
   {:else if newIndex === 100}
   <div in:fade={{duration: 500}}
