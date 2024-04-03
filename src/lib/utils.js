@@ -16,9 +16,10 @@ export function timeAgo(input) {
     
     // Use the current time in UTC for comparison
     const now = new Date();
+    console.log("now:", now);
     const nowUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 
                             now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-    
+    console.log("nowUtc:", nowUtc);
     const difference = Math.abs(nowUtc - date.getTime()); // Get the difference in milliseconds
     const minutesAgo = Math.floor(difference / (1000 * 60)); // Convert to minutes
     return `il y a ${minutesAgo} minutes.`;
