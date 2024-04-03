@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { homeCount } from '../../stores';
+    import { timeAgo } from '../utils';
   
     export let data; 
   let images = data.images;
@@ -11,37 +12,17 @@
   let currentIndex;
 
  $: if ($homeCount === 0) {
+    console.log('homeCount is 0');
     currentIndex = totalLength;
   } else {
+    console.log('homeCount is ', $homeCount);
     currentIndex = $homeCount;
   };
-  
-  function timeAgo(input) {
-  let date = input;
-
-  // Check if input is a string and try converting it to a Date object
-  if (typeof input === 'string') {
-    date = new Date(input);
-  }
-    if (!(date instanceof Date)) {
-    console.log("Not a Date object:", date);
-    return "Date format error";
-  }
-  if (isNaN(date.getTime())) {
-    console.log("Invalid Date:", date);
-    return "Invalid date";
-  }
-    const now = new Date();
-    const difference = Math.abs(now - date); // Get the difference in milliseconds
-    const minutesAgo = Math.floor(difference / (1000 * 60)); // Convert to minutes
-    return `il y a ${minutesAgo} minutes`;
-  }
 
   $: if(images[currentIndex]) console.log(images[currentIndex].timestamp, timeAgo(images[currentIndex].timestamp));
 
 
   onMount(() => {
-    currentIndex = $homeCount;
     const interval = setInterval(() => {
       timer++; // Increment the timer every second
 
@@ -60,6 +41,7 @@
         // Move to the next image after each full cycle
         if (contentIndex === 0) { // This now checks if we've cycled through all content views
         currentIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+        $homeCount = currentIndex;
       }
       }
     }, 1000); // Check every second
@@ -90,8 +72,8 @@
 
    
        <h2>{images[currentIndex].name} 
-        {currentIndex === images.length - 1 ? ' est ' : 'était'} la couleur du ciel au coin de {images[currentIndex].location}
-    {currentIndex !== images.length - 1 ? timeAgo(images[currentIndex].timestamp) : ''}</h2>
+        était la couleur du ciel au coin de {images[currentIndex].location}
+    {timeAgo(images[currentIndex].timestamp)}</h2>
 
        {:else if contentIndex === 3}
 

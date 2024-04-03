@@ -1,54 +1,77 @@
 <script>
     import { onMount } from 'svelte';
+    import { timeAgo } from '../utils';
   
     export let data; 
-    export let intervalTime = 6000;
-    let images = data.images;
-    let currentIndex = Math.floor(Math.random() * images.length - 1);
-    let currentVisible = 0; 
-    let pauseState = false;
-  
-    onMount(() => {
-      const intervals = [];
-      intervals.push(setInterval(() => {
-        pauseState = false;
-        // Change the view (color description, color block, image) every 3 seconds
-        if (currentVisible < 3) {
-          currentVisible += 1;
-          console.log(currentVisible);
-        } else {
-          // Once all views have been shown for the current item, move to the previous item
-          currentVisible = 0;
-          currentIndex = currentIndex > 0 ? currentIndex - 1 : Math.floor(Math.random() * images.length - 1);
-        }
-      }, intervalTime));
+  let images = data.images;
+  let totalLength = images.length - 1;
+  let contentIndex = 0;
+  let showingContent = true;
+  let timer = 0; 
+  let currentIndex = Math.floor(Math.random() * totalLength);
 
-      intervals.push(setInterval(() => { 
-            pauseState = true;
-        }, 5000));
-  
-      return () => intervals.map((a) => {
-        clearInterval(a);
-      }); // Cleanup on component destruction
-    });
+  $: if(images[currentIndex]) console.log(images[currentIndex].timestamp, timeAgo(images[currentIndex].timestamp));
+
+
+  onMount(() => {
+    const interval = setInterval(() => {
+      timer++; // Increment the timer every second
+
+      if (timer < 5) {
+        // For the first 5 seconds, show content
+        showingContent = true;
+      } else if (timer === 5) {
+        // On the 6th second, hide content
+        showingContent = false;
+      }
+
+      if (timer === 6) {
+        // Reset the timer and contentIndex for the next cycle
+        timer = 0;
+        contentIndex = contentIndex < 3 ? contentIndex + 1 : 0;
+        // Move to the next image after each full cycle
+        if (contentIndex === 0) { // This now checks if we've cycled through all content views
+        currentIndex = currentIndex > 0 ? currentIndex - 1 : totalLength;
+      }
+      }
+    }, 1000); // Check every second
+
+    return () => {
+      clearInterval(interval); // Cleanup on component destruction
+    };
+  });
+  $: console.log('CONTENT INDEX', contentIndex);
+    $: console.log('SHOWING CONTENT', showingContent);
+    $: console.log('images length', images.length);
+    $: console.log('CURRENT INDEX', currentIndex);
+    $: console.log('timer', timer);
+
+    $: console.log(currentIndex === images.length ? ' est ' : 'était')
   </script>
   
   <div class="content">
     {#if images.length > 0} <!-- Ensure there are items to display -->
-     {#if !pauseState}
-      {#if currentVisible === 0}
-      <img src={'archive/' + images[currentIndex].fileName} alt={images[currentIndex].name}>
-
-        {:else if currentVisible === 1}        
-        <h2>{images[currentIndex].name} était la couleur du ciel au coin de {images[currentIndex].location}</h2>
-
-        {:else if currentVisible === 2}
-        <span class="color-block" style="background-color: {images[currentIndex].color};"></span>
-        {:else if currentVisible === 3}
-
-        <h2>{images[currentIndex].name}</h2>
-      
+    {#if showingContent}
+    {#if contentIndex === 0}
+      {#if images[currentIndex].name}
+      <h2>{images[currentIndex].name}</h2>
       {/if}
+      {:else if contentIndex === 1}     
+            <img src={'archive/' + images[currentIndex].fileName} alt={images[currentIndex].name}>
+
+       {:else if contentIndex === 2}
+
+   
+       <h2>{images[currentIndex].name} était la couleur du ciel au coin de {images[currentIndex].location}
+    {timeAgo(images[currentIndex].timestamp)}</h2>
+
+       {:else if contentIndex === 3}
+
+
+       <span class="color-block" style="background-color: {images[currentIndex].color};"></span>
+
+     
+     {/if}
       {/if}
     {/if}
   </div>
@@ -61,12 +84,17 @@
       flex-direction: column;
       height: 100vh; /* Adjust based on your needs */
     }
-  
+    h2 {
+        max-width: 64rem;
+    }
+    img {
+        max-width: 100%;
+    }
+
     h2, img {
       color: white;
       text-align: center;
       transition: opacity 0.5s ease-in-out; /* Smooth transition */
-      max-width: 64rem;
     }
   
     .color-block {
