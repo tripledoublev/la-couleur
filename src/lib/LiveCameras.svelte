@@ -41,8 +41,8 @@ function getNextBatch(imageUrls) {
   function startRefetchTimer() {
     clearTimeout(refetchTimer);
     refetchTimer = setTimeout(() => {
-      processAndFilterImages();
-    }, 540000); // 9 minutes
+      isLoading = false;
+    }, 6000); // 6 seconds
   }
   
   // Function to process a single image
@@ -123,10 +123,16 @@ function getNextBatch(imageUrls) {
     isLoading = true;
     await processAndFilterImages();
     startRefetchTimer();
-    isLoading = false;
   });
   </script>
   {#if !isLoading}
   <img bind:this={imageElement} src={currentSrc} alt="Couleur Montréal">
+  {:else}
+  <h2>Le 12 mars 2024, la ville de Montréal a cessé de mettre à jour les images des caméras de circulations. Elles sont toujours accessibles en ligne, figées dans le temps.</h2>
   {/if}
   
+  <style>
+    h2 {
+      max-width: 80vw;
+    }
+  </style>
