@@ -45,7 +45,6 @@ Your browser does not support the video tag.
     top: -5px;
     left: 0%;
     min-width: 100vw;
-    min-height: 56.25vw;
     width: 100vw;
     height: auto;
     z-index: -1;
