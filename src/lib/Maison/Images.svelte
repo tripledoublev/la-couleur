@@ -61,3 +61,11 @@
     {/if}
   {/if}
 {/if}
+
+<style>
+  @media (max-width: 600px) {
+    img {
+      width: 100%;
+    }
+  }
+</style>
