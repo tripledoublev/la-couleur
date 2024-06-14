@@ -4,6 +4,7 @@
   import axios from 'axios';
   import { homeCount } from './stores.js';
 
+  import Nav from './lib/Nav.svelte';
   import Time from './lib/Time.svelte';
   import Text from './lib/Text.svelte';
   import VSequencer from './lib/VSequencer.svelte';
@@ -25,6 +26,7 @@
   let homeImages = [];
   let componentIndexes = Array.from({ length: 8 }, (_, i) => i);
   let currentIndex = 0; // Current index in the componentIndexes array
+  let isAutoChange = true; // interval or manual change
 
 // Function to shuffle the indexes array
 function shuffleArray(array) {
@@ -63,39 +65,55 @@ function shuffleArray(array) {
     shuffleArray(componentIndexes);
 
     const updateComponent = () => {
-      if (showComponent) {
-        if (currentIndex >= componentIndexes.length) {
-          shuffleArray(componentIndexes); // Re-shuffle after going through all components
-          currentIndex = 0; // Reset index
-        }
-        
-        newIndex = componentIndexes[currentIndex++];
-        
-        if (newIndex >= 0 && newIndex <= 3) {
-          whichInterval = 6000;
-        } else if (newIndex === 4) {
-          whichInterval = 12000;
-        } else if (newIndex === 5) {
-          whichInterval = getNewInterval() * 2;
-        } else {
-          whichInterval = getNewInterval();
-        }
-          showComponent = false;
-        } else {
-          whichInterval = 3000;
-          newIndex = 100;
-          showComponent = true;
-        }
-      setTimeout(updateComponent, whichInterval);
+      if (isAutoChange) {
+        if (showComponent) {
+          if (currentIndex >= componentIndexes.length) {
+            shuffleArray(componentIndexes); // Re-shuffle after going through all components
+            currentIndex = 0; // Reset index
+          }
+          
+          newIndex = componentIndexes[currentIndex++];
+          
+          if (newIndex >= 0 && newIndex <= 3) {
+            whichInterval = 6000;
+          } else if (newIndex === 4) {
+            whichInterval = 12000;
+          } else if (newIndex === 5) {
+            whichInterval = getNewInterval() * 2;
+          } else {
+            whichInterval = getNewInterval();
+          }
+            showComponent = false;
+          } else {
+            whichInterval = 3000;
+            newIndex = 100;
+            showComponent = true;
+          }
+        setTimeout(updateComponent, whichInterval);
+      }
     };
 
-    updateComponent(); // Initialize the first update
+
+
+
+    updateComponent();
   }); 
+  function setIndex(index) {
+    newIndex = index;
+  }
+  function toggleAutoChange() {
+    isAutoChange = !isAutoChange;
+    if (isAutoChange) {
+      currentIndex = 0;
+      shuffleArray(componentIndexes);
+    }
+  }
 
   $: console.log('INDEX!!!!!!!!!!!!!!', newIndex);
 </script>
 
 <main>
+  <Nav {setIndex} {toggleAutoChange} {isAutoChange} />
   {#if newIndex === 0}
   <div in:fade={{duration: 500}}
   >
